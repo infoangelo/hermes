@@ -3,7 +3,7 @@ venv/
 *.pyc
 __pycache__/
 .ideia/
-.env
+instance/.env
 
 instance/
 
@@ -14,3 +14,4 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+.env

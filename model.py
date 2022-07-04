@@ -40,5 +40,5 @@ class Exp(db.Model):
     lesson_title = db.Column(db.String(120), nullable=False)
 
     def __repr__(self):
-        return '<Exp %r>' % self.lesson_value
+        return '%r' % self.lesson_value
 

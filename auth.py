@@ -2,9 +2,10 @@ import functools
 from flask import (
     flash, g, redirect, render_template, request, session, url_for
 )
+from sqlalchemy import func
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import app
-from model import Users, db
+from model import Users, Exp, db
 
 
 @app.route('/register', methods=('GET', 'POST'))
@@ -82,6 +83,12 @@ def load_logged_in_user():
         g.user = None
     else:
         g.user = Users.query.filter_by(id=user_id).first()
+        all_xp = Exp.query.filter_by(user_id=user_id).all()
+        xp_list = []
+        for xp in all_xp:
+            i = xp.lesson_value
+            xp_list.insert(0, i)
+        g.xp = sum(xp_list)
 
 
 @app.before_first_request
