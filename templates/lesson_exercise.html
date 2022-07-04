@@ -1,0 +1,16 @@
+{% extends "template.html" %}
+{% block conteudo %}
+
+<h1>{{ lesson.title }}</h1>
+<p></p>
+<div><b>Exercício: </b>{{ lesson.exercise }}</div>
+  <form method="post" class="form-group">
+    <label for="exercise"></label>
+    <textarea name="exercise" id="exercise" required></textarea>
+    <br>
+    <input type="submit" value="Anterior">
+    <input type="submit" value="Próximo">
+    <br>
+  </form>
+
+{% endblock %}

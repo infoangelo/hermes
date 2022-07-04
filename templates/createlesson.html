@@ -1,0 +1,37 @@
+{% extends "template.html" %}
+{% block conteudo %}
+
+  <form method="post">
+    <label for="title">Título</label>
+    <input name="title" id="title" required>
+    <br>
+    <label for="description">Descrição</label>
+    <input name="description" id="description" required>
+    <br>
+    <label for="content">Conteúdo</label>
+    <input name="content" id="content" required>
+    <br>
+    <label for="exercise">Exercício</label>
+    <input name="exercise" id="exercise" required>
+    <br>
+    <label for="input_exercise">Entrada de dados para o exercício</label>
+    <input name="input_exercise" id="input_exercise">
+    <br>
+    <label for="output_exercise">Saída de dados esperada para o exercício</label>
+    <input name="output_exercise" id="output_exercise">
+    <br>
+    <p>Selecione a dificuldade do exercício</p>
+    <label for="easy">Fácil</label>
+    <input type="radio" name="level" id="easy" value="easy" checked>
+    <br>
+    <label for="medium">Média</label>
+    <input type="radio" name="level" id="medium" value="medium">
+    <br>
+    <label for="hard">Difícil</label>
+    <input type="radio" name="level" id="hard" value="hard">
+    <br>
+    <br>
+    <input type="submit" value="Cadastrar">
+  </form>
+
+{% endblock %}

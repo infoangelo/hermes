@@ -1,0 +1,23 @@
+{% extends "template.html" %}
+{% block conteudo %}
+
+<h1>Lições de Python: </h1>
+<table class="table table-bordered">
+    <thead class="thead-dark">
+    <tr>
+        <th>Lição</th>
+        <th>Descrição</th>
+    </tr>
+    </thead>
+    <tbody>
+
+{% for lesson in lessons_list %}
+    <tr>
+    <td><a href="/lesson/{{ lesson.id }}">{{ lesson.title }}</a></td>
+    <td>{{ lesson.description }}</td>
+    </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

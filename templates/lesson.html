@@ -1,0 +1,10 @@
+{% extends "template.html" %}
+{% block conteudo %}
+
+<h1>{{ lesson.title }}</h1>
+<div>{{ lesson.content }}</div>
+<p></p>
+<a class="nav-link" href="{{ url_for('lessons') }}">Anterior</a>
+<a class="nav-link" href="{{ url_for('lesson_exercise', id=lesson.id) }}">Próxima</a>
+
+{% endblock %}
