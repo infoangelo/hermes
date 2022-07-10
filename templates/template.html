@@ -26,6 +26,9 @@
       {% endif %}
     </nav>
     <div class="container-fluid">
+      <div class="page-header">
+          <h1>{{ titulo }}</h1>
+      </div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul id="messages" class="list-unstyled">
@@ -35,9 +38,6 @@
         </ul>
         {% endif %}
         {% endwith %}
-      <div class="page-header">
-          <h1>{{ titulo }}</h1>
-      </div>
 
         {% block conteudo %}{% endblock %}
 

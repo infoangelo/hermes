@@ -4,6 +4,7 @@ from flask import (
 from werkzeug.utils import redirect
 from app import app
 from model import Lesson, Exp, db
+from auth import login_required
 
 
 @app.route('/')
@@ -18,12 +19,14 @@ def lessons():
 
 
 @app.route('/lesson/<int:id>')
+@login_required
 def lesson(id):
     lesson = Lesson.query.filter_by(id=id).first()
     return render_template('lesson.html', lesson=lesson)
 
 
 @app.route('/lessonexercise/<int:id>', methods=('GET', 'POST'))
+@login_required
 def lesson_exercise(id):
     lesson = Lesson.query.filter_by(id=id).first()
     if request.method == 'POST':
@@ -56,6 +59,7 @@ def lesson_exercise(id):
 
 
 @app.route('/newlesson/', methods=('GET', 'POST'))
+@login_required
 def newlesson():
     if request.method == 'POST':
         title = request.form['title']
