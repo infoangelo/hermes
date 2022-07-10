@@ -1,0 +1,25 @@
+{% extends "template.html" %}
+{% block conteudo %}
+
+<h1>Lições e experiência de {{ g.user.name }}: </h1>
+<table class="table table-bordered">
+    <thead class="thead-dark">
+    <tr>
+        <th>Lição</th>
+        <th>XP</th>
+        <th>Data</th>
+    </tr>
+    </thead>
+    <tbody>
+
+{% for lesson in user_lessons_list %}
+    <tr>
+    <td><a href="/lesson/{{ lesson.lesson_id }}">{{ lesson.lesson_title }}</a></td>
+    <td>{{ level_values[lesson.lesson_value] }}</td>
+    <td>{{ lesson.exec_date }}</td>
+    </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

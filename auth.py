@@ -2,6 +2,7 @@ import functools
 from flask import (
     flash, g, redirect, render_template, request, session, url_for
 )
+from sqlalchemy import exc
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import app
 from model import Users, Exp, db
@@ -27,8 +28,9 @@ def register():
                 user = Users(name=name, username=username, password=generate_password_hash(password), role='student')
                 db.session.add(user)
                 db.session.commit()
-            except db.IntegrityError:
+            except exc.SQLAlchemyError:
                 error = f"Email {username} já foi registrado."
+                db.session.rollback()
             else:
                 return redirect(url_for("login"))
 
@@ -69,7 +71,7 @@ def logout():
 @app.before_request
 def load_logged_in_user():
     user_id = session.get('user_id')
-
+    level_values = {'easy': 10, 'medium': 20, 'hard': 30}
     if user_id is None:
         g.user = None
     else:
@@ -77,7 +79,7 @@ def load_logged_in_user():
         all_xp = Exp.query.filter_by(user_id=user_id).all()
         xp_list = []
         for xp in all_xp:
-            i = xp.lesson_value
+            i = level_values[xp.lesson_value]
             xp_list.insert(0, i)
         g.xp = sum(xp_list)
 

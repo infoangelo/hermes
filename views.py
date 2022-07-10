@@ -1,11 +1,11 @@
 from flask import (
-    flash, g, redirect, render_template, request, session, url_for
+    flash, g, render_template, request, url_for
 )
 from werkzeug.utils import redirect
 from app import app
 from model import Lesson, Exp, db
 from auth import login_required
-
+from sqlalchemy import exc
 
 @app.route('/')
 def index():
@@ -38,8 +38,6 @@ def lesson_exercise(id):
     if request.method == 'POST':
         exercise = request.form['exercise']
         error = None
-        level_values = {'easy':10, 'medium':20, 'hard':30}
-        lesson_value = level_values[lesson.exp_value]
 
         if not exercise:
             error = 'Campo exercício é obrigatório.'
@@ -49,12 +47,13 @@ def lesson_exercise(id):
                 error = 'Sua resposta no exercício não está correta'
             else:
                 try:
-                    xp = Exp(user_id=g.user.id, lesson_value=lesson_value, lesson_title=lesson.title)
+                    xp = Exp(user_id=g.user.id, lesson_id=lesson.id, lesson_value=lesson.exp_value, lesson_title=lesson.title)
                     db.session.add(xp)
                     db.session.commit()
                     return redirect(url_for("lesson", id=lesson.id + 1))
-                except db.IntegrityError:
-                    error = f"Não foi possível somar experiência."
+                except exc.SQLAlchemyError:
+                    error = f"Você já fez essa lição, então não ganha XP."
+                    db.session.rollback()
 
         else:
             return redirect(url_for("index"))
@@ -62,6 +61,14 @@ def lesson_exercise(id):
         flash(error)
 
     return render_template('lesson_exercise.html', lesson=lesson)
+
+
+@app.route('/xp/<int:id>')
+@login_required
+def xp(id):
+    user_lessons_list = Exp.query.filter_by(user_id=id).all()
+    level_values = {'easy': 10, 'medium': 20, 'hard': 30}
+    return render_template('xp.html', user_lessons_list=user_lessons_list, level_values=level_values)
 
 
 @app.route('/newlesson/', methods=('GET', 'POST'))
