@@ -36,7 +36,9 @@ def lesson_exercise(id):
             error = 'Campo exercício é obrigatório.'
 
         if error is None:
-            if exercise.casefold() == lesson.output_exercise.casefold():
+            if exercise.casefold() != lesson.output_exercise.casefold():
+                error = 'Sua resposta no exercício não está correta'
+            else:
                 try:
                     xp = Exp(user_id=g.user.id, lesson_value=lesson_value, lesson_title=lesson.title)
                     db.session.add(xp)
@@ -44,8 +46,7 @@ def lesson_exercise(id):
                     return redirect(url_for("lesson", id=lesson.id + 1))
                 except db.IntegrityError:
                     error = f"Não foi possível somar experiência."
-                else:
-                    error = 'Sua resposta no exercício não está correta'
+
         else:
             return redirect(url_for("index"))
 
