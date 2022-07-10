@@ -38,14 +38,6 @@ def register():
     return render_template('auth/register.html')
 
 
-@app.route('/registeradmin/', methods=('GET', 'POST'))
-def register_admin():
-    user = Users(name='Administrador', username='admin', password=generate_password_hash('senhadificil'), role='admin')
-    db.session.add(user)
-    db.session.commit()
-    return render_template('auth/register.html')
-
-
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
