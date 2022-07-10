@@ -2,7 +2,6 @@ import functools
 from flask import (
     flash, g, redirect, render_template, request, session, url_for
 )
-from sqlalchemy import func
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import app
 from model import Users, Exp, db
