@@ -22,6 +22,9 @@ def lessons():
 @login_required
 def lesson(id):
     lesson = Lesson.query.filter_by(id=id).first()
+    if lesson is None:
+        return redirect(url_for("lessons"))
+
     return render_template('lesson.html', lesson=lesson)
 
 
@@ -29,6 +32,9 @@ def lesson(id):
 @login_required
 def lesson_exercise(id):
     lesson = Lesson.query.filter_by(id=id).first()
+    if lesson is None:
+        return redirect(url_for("lessons"))
+
     if request.method == 'POST':
         exercise = request.form['exercise']
         error = None
