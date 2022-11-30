@@ -2,9 +2,8 @@
 {% block conteudo %}
 
 <h1>{{ lesson.title }}</h1>
-<div>{{ lesson.content }}</div>
-<p></p>
-<a class="btn btn-primary" href="{{ url_for('lessons') }}">Anterior</a>
-<a class="btn btn-primary" href="{{ url_for('lesson_exercise', id=lesson.id) }}">Próxima</a>
+<div class="d-sm-flex text-start p-3" style="max-width: 60rem"> {{ lesson.content }} </div>
+<a class="btn btn-secondary" href="{{ url_for('lessons') }}">Anterior</a>
+<a class="btn btn-secondary" href="{{ url_for('lesson_exercise', id=lesson.id) }}">Próxima</a>
 
 {% endblock %}

@@ -12,7 +12,7 @@ from model import Users, Exp, db
 def register():
     if request.method == 'POST':
         name = request.form['name']
-        username = request.form['username']
+        username = request.form['email']
         password = request.form['password']
         error = None
 
@@ -42,7 +42,7 @@ def register():
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['email']
         password = request.form['password']
         error = None
         user = Users.query.filter_by(username=username).first()

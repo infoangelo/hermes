@@ -4,18 +4,18 @@
 
   <form method="post">
     <div class="row mb-2">
-      <label for="username" class="col-sm-1 col-form-label">Usuário</label>
+      <label for="email" class="col-sm-1 col-form-label">E-mail</label>
       <div class="col-sm-4">
-        <input name="username" id="username" class="form-control" required>
+        <input name="email" id="email" class="form-control" title="Digite seu e-mail" required>
       </div>
     </div>
     <div class="row mb-2">
       <label for="password"  class="col-sm-1 col-form-label">Senha</label>
       <div class="col-sm-4">
-        <input type="password" name="password" id="password" class="form-control" required>
+        <input type="password" name="password" id="password" class="form-control" title="Digite sua senha" required>
       </div>
     </div>
-    <input type="submit" class="btn btn-primary" value="Entrar">
+    <input type="submit" class="btn btn-secondary" value="Entrar">
   </form>
 
 {% endblock %}

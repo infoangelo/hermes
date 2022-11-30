@@ -1,16 +1,48 @@
 {% extends "template.html" %}
+{% block head %}
+<script src="https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"></script>
+<style>
+#editor {
+    position: relative;
+    max-width: 40rem;
+    height: 20rem;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ext-language_tools.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-eclipse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/mode-python.min.js"></script>
+{% endblock %}
 {% block conteudo %}
-
 <h1>{{ lesson.title }}</h1>
 <p></p>
-<div><b>Exercício: </b>{{ lesson.exercise }}</div>
-  <form method="post" class="form-group">
-    <label for="exercise"></label>
-    <textarea name="exercise" id="exercise" required></textarea>
-    <br>
-    <a class="btn btn-primary" href="{{ url_for('lessons') }}">Anterior</a>
-    <input type="submit" class="btn btn-primary" value="Próximo">
-    <br>
-  </form>
+<div class="m-3"><b>Exercício: </b>{{ lesson.exercise }}</div>
+<div id="editor"></div>
 
+<form id="teste" method="post" class="form-group">
+<textarea name="exercise" id="exercise" class="d-none"></textarea>
+<a class="btn btn-secondary m-3" href="{{ url_for('lessons') }}">Anterior</a>
+<button onclick="main()" class="btn btn-secondary" value="Executar">Executar</button>
+</form>
+
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/eclipse");
+    editor.session.setMode("ace/mode/python");
+</script>
+    <script type="text/javascript">
+      async function main(){
+        let pyodide = await loadPyodide();
+        pyodide.runPython(`
+            import sys
+            import io
+            sys.stdout = io.StringIO()
+        `);
+        const resultado = pyodide.runPython(editor.getValue());
+        var stdout = pyodide.runPython("sys.stdout.getvalue()")
+        alert(stdout);
+        document.forms['teste'].elements['exercise'].value = stdout;
+        document.forms['teste'].submit();
+      }
+    </script>
 {% endblock %}
