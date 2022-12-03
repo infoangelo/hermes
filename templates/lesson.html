@@ -1,9 +1,8 @@
 {% extends "template.html" %}
 {% block conteudo %}
 
-<h1>{{ lesson.title }}</h1>
 <div class="d-sm-flex text-start p-3" style="max-width: 60rem"> {{ lesson.content }} </div>
-<a class="btn btn-secondary" href="{{ url_for('lessons') }}">Anterior</a>
+<button class="btn btn-secondary m-3" onclick="history.back()">Anterior</button>
 <a class="btn btn-secondary" href="{{ url_for('lesson_exercise', id=lesson.id) }}">Próxima</a>
 
 {% endblock %}

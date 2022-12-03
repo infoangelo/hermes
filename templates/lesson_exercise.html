@@ -2,11 +2,11 @@
 {% block head %}
 <script src="https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"></script>
 <style>
-#editor {
-    position: relative;
-    max-width: 40rem;
-    height: 20rem;
-}
+    #editor {
+        position: relative;
+        max-width: 40rem;
+        height: 15rem;
+    }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ext-language_tools.min.js"></script>
@@ -14,35 +14,82 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/mode-python.min.js"></script>
 {% endblock %}
 {% block conteudo %}
-<h1>{{ lesson.title }}</h1>
-<p></p>
 <div class="m-3"><b>Exercício: </b>{{ lesson.exercise }}</div>
-<div id="editor"></div>
+<div style="max-width: 35rem;">
+    <div id="editor" aria-label="Para executar o código use shift+enter, para ir para próxima lição ctrl+enter"></div>
+    <div>
+        Saída do seu código:
+    </div>
+    <textarea id="output" class="form-control" disabled></textarea>
+</div>
 
-<form id="teste" method="post" class="form-group">
-<textarea name="exercise" id="exercise" class="d-none"></textarea>
-<a class="btn btn-secondary m-3" href="{{ url_for('lessons') }}">Anterior</a>
-<button onclick="main()" class="btn btn-secondary" value="Executar">Executar</button>
-</form>
+<button class="btn btn-secondary m-3" onclick="history.back()">Anterior</button>
+<button id="executar" onclick="evaluatePython()" class="btn btn-secondary" value="Executar">Executar</button>
 
 <script>
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/eclipse");
     editor.session.setMode("ace/mode/python");
 </script>
-    <script type="text/javascript">
-      async function main(){
+<script type="text/javascript">
+    const lesson_exercise_url = {{ url_for("lesson_exercise", id = lesson.id) | tojson }}
+    const next_lesson_url = {{ url_for("lesson", id = lesson.id + 1) | tojson }}
+    const output = document.getElementById("output");
+    const botao = document.getElementById("executar");
+    var lesson_input_exercise = {{ lesson.input_exercise | tojson }} 
+
+    function addToOutput(output_data) {
+        let data = new FormData();
+        data.append('exercise', output_data);
+        fetch(lesson_exercise_url, {
+            method: "POST",
+            body: data,
+        }).then(response => response.json())
+            .then(data => {
+                if (data["sucesso"]) {
+                    output.value = data["message"] + '\n' + '>>>' + output_data + '\n';
+                    executar.innerHTML = "Próximo";
+                    executar.setAttribute("onclick", "next()");
+                } else {
+                    const output_data_array =  output_data.toString().split("\n");
+                    const output_data_error = output_data_array.slice(output_data_array.lastIndexOf('  File "<exec>", line 7, in evaluateCode')+1)
+                    output.value = data["message"] + '\n' + '>>>' + output_data_error.join("\n") + '\n';
+                }
+            })
+
+    }
+
+    function next() {
+        window.location.href = next_lesson_url;
+    }
+
+
+    async function evaluatePython() {
         let pyodide = await loadPyodide();
-        pyodide.runPython(`
-            import sys
-            import io
-            sys.stdout = io.StringIO()
-        `);
-        const resultado = pyodide.runPython(editor.getValue());
-        var stdout = pyodide.runPython("sys.stdout.getvalue()")
-        alert(stdout);
-        document.forms['teste'].elements['exercise'].value = stdout;
-        document.forms['teste'].submit();
-      }
-    </script>
+        pyodide.runPythonAsync(`
+            def evaluateCode():
+                from js import editor, lesson_input_exercise
+                import sys
+                import io
+                sys.stdin = io.StringIO(lesson_input_exercise)
+                sys.stdout = io.StringIO()
+                exec(editor.getValue())
+                return sys.stdout.getvalue()
+            evaluateCode()
+        `)
+            .then((output) => { addToOutput(output) })
+            .catch((err) => { addToOutput(err) });
+    }
+
+    function doc_keyUp(e) {
+        if (e.shiftKey && e.key === 'Enter') {
+            evaluatePython();
+        }
+        else if (e.ctrlKey && e.key === 'Enter'){
+            next();
+        }
+        }
+    document.addEventListener('keyup', doc_keyUp, false);
+
+</script>
 {% endblock %}

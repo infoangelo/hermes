@@ -3,7 +3,7 @@ from flask import (
 )
 from werkzeug.utils import redirect
 from app import app
-from model import Lesson, Exp, db
+from model import Lesson, Exp, db, Attempts
 from auth import login_required
 from sqlalchemy import exc
 
@@ -15,7 +15,7 @@ def index():
 @app.route('/lessons/')
 def lessons():
     lessons_list = Lesson.query.all()
-    return render_template('lessons_list.html', lessons_list=lessons_list)
+    return render_template('lessons_list.html', lessons_list=lessons_list, titulo="Lições de Python:")
 
 
 @app.route('/lesson/<int:id>')
@@ -25,7 +25,7 @@ def lesson(id):
     if lesson is None:
         return redirect(url_for("lessons"))
 
-    return render_template('lesson.html', lesson=lesson)
+    return render_template('lesson.html', lesson=lesson, titulo=lesson.title)
 
 
 @app.route('/lessonexercise/<int:id>', methods=('GET', 'POST'))
@@ -38,29 +38,55 @@ def lesson_exercise(id):
     if request.method == 'POST':
         exercise = request.form['exercise']
         error = None
+        level_values = {'easy': 10, 'medium': 20, 'hard': 30}
 
         if not exercise:
             error = 'Campo exercício é obrigatório.'
+            return {
+                "message": error,
+                "sucesso": False
+            }
 
         if error is None:
-            if exercise.casefold() != lesson.output_exercise.casefold():
+            if exercise.strip().casefold() != lesson.output_exercise.strip().casefold():
                 error = 'Sua resposta no exercício não está correta'
+                try:
+                    attempt = Attempts(user_id=g.user.id, lesson_id=lesson.id)
+                    db.session.add(attempt)
+                    db.session.commit()
+                    return {
+                        "message": error,
+                        "sucesso": False
+                    }
+                except exc.SQLAlchemyError:
+                    db.session.rollback()
+                    return {
+                        "message": error,
+                        "sucesso": False
+                    }                
+
             else:
                 try:
                     xp = Exp(user_id=g.user.id, lesson_id=lesson.id, lesson_value=lesson.exp_value, lesson_title=lesson.title)
                     db.session.add(xp)
                     db.session.commit()
-                    return redirect(url_for("lesson", id=lesson.id + 1))
+                    return {
+                        "message": f'Meus parabéns, sua resposta está correta, você ganhou {level_values[lesson.exp_value]} XP!',
+                        "sucesso": True
+                    }
                 except exc.SQLAlchemyError:
                     error = f"Você já fez essa lição, então não ganha XP."
                     db.session.rollback()
+                    return  {
+                        "message": error,
+                        "sucesso": True
+                    }
 
-        else:
-            return redirect(url_for("index"))
+
 
         flash(error)
 
-    return render_template('lesson_exercise.html', lesson=lesson)
+    return render_template('lesson_exercise.html', lesson=lesson, titulo=lesson.title)
 
 
 @app.route('/xp/<int:id>')
@@ -68,7 +94,7 @@ def lesson_exercise(id):
 def xp(id):
     user_lessons_list = Exp.query.filter_by(user_id=id).all()
     level_values = {'easy': 10, 'medium': 20, 'hard': 30}
-    return render_template('xp.html', user_lessons_list=user_lessons_list, level_values=level_values)
+    return render_template('xp.html', user_lessons_list=user_lessons_list, level_values=level_values, titulo="Lições e experiência de {name}: ".format(name=g.user.name))
 
 
 @app.route('/newlesson/', methods=('GET', 'POST'))
@@ -102,7 +128,7 @@ def newlesson():
             except db.IntegrityError:
                 error = f"Lição {title} já foi registrada."
             else:
-                return redirect(url_for("index"))
+                return redirect(url_for("lessons"))
 
         flash(error)
 
