@@ -6,6 +6,7 @@
         position: relative;
         max-width: 40rem;
         height: 15rem;
+        margin-bottom: 1rem;
     }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.min.js"></script>
@@ -14,8 +15,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/mode-python.min.js"></script>
 {% endblock %}
 {% block conteudo %}
-<div class="m-3"><b>Exercício: </b>{{ lesson.exercise }}</div>
-<div style="max-width: 35rem;">
+<div style="max-width: 35rem; margin-bottom: 1rem"><b>Exercício: </b>{{ lesson.exercise }}</div>
+<div style="max-width: 35rem; margin-bottom: 1rem">
     <div id="editor" aria-label="Para executar o código use shift+enter, para ir para próxima lição ctrl+enter"></div>
     <div>
         Saída do seu código:
@@ -23,7 +24,7 @@
     <textarea id="output" class="form-control" disabled></textarea>
 </div>
 
-<button class="btn btn-secondary m-3" onclick="history.back()">Anterior</button>
+<button class="btn btn-secondary" onclick="history.back()">Anterior</button>
 <button id="executar" onclick="evaluatePython()" class="btn btn-secondary" value="Executar">Executar</button>
 
 <script>
