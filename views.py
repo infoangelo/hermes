@@ -49,7 +49,7 @@ def lesson_exercise(id):
 
         if error is None:
             if exercise.strip().casefold() != lesson.output_exercise.strip().casefold():
-                error = 'A resposta para o exercício não está correta. Por favor tente novamente.'
+                error = 'A resposta para o exercício não está correta. Por favor, tente novamente.'
                 try:
                     attempt = Attempts(user_id=g.user.id, lesson_id=lesson.id)
                     db.session.add(attempt)
