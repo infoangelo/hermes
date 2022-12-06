@@ -41,7 +41,7 @@ def lesson_exercise(id):
         level_values = {'easy': 10, 'medium': 20, 'hard': 30}
 
         if not exercise:
-            error = 'Campo exercício é obrigatório.'
+            error = 'Por favor, escreva uma resposta para o exercício.'
             return {
                 "message": error,
                 "sucesso": False
@@ -49,7 +49,7 @@ def lesson_exercise(id):
 
         if error is None:
             if exercise.strip().casefold() != lesson.output_exercise.strip().casefold():
-                error = 'Sua resposta no exercício não está correta'
+                error = 'A resposta para o exercício não está correta. Por favor tente novamente.'
                 try:
                     attempt = Attempts(user_id=g.user.id, lesson_id=lesson.id)
                     db.session.add(attempt)

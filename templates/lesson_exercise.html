@@ -17,10 +17,8 @@
 {% block conteudo %}
 <div style="max-width: 35rem; margin-bottom: 1rem"><b>Exercício: </b>{{ lesson.exercise }}</div>
 <div style="max-width: 35rem; margin-bottom: 1rem">
-    <div id="editor" aria-label="Para executar o código use shift+enter, para ir para próxima lição ctrl+enter"></div>
-    <div>
-        Saída do seu código:
-    </div>
+    <div id="editor" aria-label="Digite aqui o código da resposta do exercício e use shift+enter para executa-lo."></div>
+    <label for="output">Saída do seu código:</label>
     <textarea id="output" class="form-control" disabled></textarea>
 </div>
 
@@ -48,13 +46,14 @@
         }).then(response => response.json())
             .then(data => {
                 if (data["sucesso"]) {
-                    output.value = data["message"] + '\n' + '>>>' + output_data + '\n';
+                    output.value = data["message"] + '\n' + 'Saída do seu código >>>' + output_data + '\n';
                     executar.innerHTML = "Próximo";
                     executar.setAttribute("onclick", "next()");
+                    editor.setAttribute("aria-label", "Para ir para a próxima lição pressione ctrl+enter.")
                 } else {
                     const output_data_array =  output_data.toString().split("\n");
                     const output_data_error = output_data_array.slice(output_data_array.lastIndexOf('  File "<exec>", line 7, in evaluateCode')+1)
-                    output.value = data["message"] + '\n' + '>>>' + output_data_error.join("\n") + '\n';
+                    output.value = data["message"] + '\n' + 'Saída do seu código >>>' + output_data_error.join("\n") + '\n';
                 }
             })
 
